@@ -20,7 +20,7 @@ import io.netty.buffer.Unpooled;
 public class ConstantTemperatureSerialPort implements PWSerialPortListener {
     private ByteBuf buffer;
     private HandlerThread thread;
-    private IncubatorHandler handler;
+    private ConstantTemperatureHandler handler;
     private PWSerialPortHelper helper;
 
     private boolean enabled = false;
@@ -103,7 +103,7 @@ public class ConstantTemperatureSerialPort implements PWSerialPortListener {
         if (EmptyUtils.isEmpty(this.thread) && EmptyUtils.isEmpty(this.handler)) {
             this.thread = new HandlerThread("ConstantTemperatureSerialPort");
             this.thread.start();
-            this.handler = new IncubatorHandler(this.thread.getLooper());
+            this.handler = new ConstantTemperatureHandler(this.thread.getLooper());
         }
     }
 
@@ -228,8 +228,8 @@ public class ConstantTemperatureSerialPort implements PWSerialPortListener {
         }
     }
 
-    private class IncubatorHandler extends Handler {
-        public IncubatorHandler(Looper looper) {
+    private class ConstantTemperatureHandler extends Handler {
+        public ConstantTemperatureHandler(Looper looper) {
             super(looper);
         }
 
