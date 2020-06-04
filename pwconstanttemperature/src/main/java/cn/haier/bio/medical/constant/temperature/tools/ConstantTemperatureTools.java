@@ -3,6 +3,7 @@ package cn.haier.bio.medical.constant.temperature.tools;
 import cn.qd.peiwen.pwtools.ByteUtils;
 import io.netty.buffer.ByteBuf;
 
+
 public class ConstantTemperatureTools {
     public static final byte[] HEADER = {(byte)0xAA,(byte)0x55};
 

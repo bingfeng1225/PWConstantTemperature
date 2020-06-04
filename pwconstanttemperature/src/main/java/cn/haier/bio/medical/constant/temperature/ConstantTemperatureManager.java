@@ -56,7 +56,7 @@ public class ConstantTemperatureManager {
         }
     }
 
-    public void changeListener(IConstantTemperatureListener listener) {
+    public void changeListener(ICentrifugeListener listener) {
         if (EmptyUtils.isNotEmpty(this.serialPort)) {
             this.serialPort.changeListener(listener);
         }
