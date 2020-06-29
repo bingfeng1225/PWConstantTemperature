@@ -81,7 +81,7 @@ class ConstantTemperatureSerialPort implements PWSerialPortListener {
 
     private void createHelper(String path) {
         if (this.helper == null) {
-            this.helper = new PWSerialPortHelper("CentrifugeSerialPort");
+            this.helper = new PWSerialPortHelper("ConstantTemperatureSerialPort");
             this.helper.setTimeout(3);
             this.helper.setPath(path);
             this.helper.setBaudrate(9600);
@@ -98,7 +98,7 @@ class ConstantTemperatureSerialPort implements PWSerialPortListener {
 
     private void createHandler() {
         if (this.thread == null && this.handler == null) {
-            this.thread = new HandlerThread("CentrifugeSerialPort");
+            this.thread = new HandlerThread("ConstantTemperatureSerialPort");
             this.thread.start();
             this.handler = new CentrifugeHandler(this.thread.getLooper());
         }
@@ -131,7 +131,7 @@ class ConstantTemperatureSerialPort implements PWSerialPortListener {
         }
         this.helper.writeAndFlush(data);
         ConstantTemperatureSerialPort.this.switchReadModel();
-        this.loggerPrint("CentrifugeSerialPort Send:" + ConstantTemperatureTools.bytes2HexString(data, true, ", "));
+        this.loggerPrint("ConstantTemperatureSerialPort Send:" + ConstantTemperatureTools.bytes2HexString(data, true, ", "));
     }
 
     public void switchReadModel() {
@@ -160,7 +160,7 @@ class ConstantTemperatureSerialPort implements PWSerialPortListener {
             byte[] data = new byte[index];
             this.buffer.readBytes(data, 0, data.length);
             this.buffer.discardReadBytes();
-            this.loggerPrint("CentrifugeSerialPort 指令丢弃:" + ConstantTemperatureTools.bytes2HexString(data, true, ", "));
+            this.loggerPrint("ConstantTemperatureSerialPort 指令丢弃:" + ConstantTemperatureTools.bytes2HexString(data, true, ", "));
         }
         return result;
     }
@@ -204,7 +204,7 @@ class ConstantTemperatureSerialPort implements PWSerialPortListener {
             return;
         }
         if (null != this.listener && null != this.listener.get()) {
-            this.listener.get().onConstantTemperaturePrint("CentrifugeSerialPort state changed: " + state.name());
+            this.listener.get().onConstantTemperaturePrint("ConstantTemperatureSerialPort state changed: " + state.name());
         }
     }
 
@@ -246,7 +246,7 @@ class ConstantTemperatureSerialPort implements PWSerialPortListener {
                 continue;
             }
             this.buffer.discardReadBytes();
-            this.loggerPrint("CentrifugeSerialPort Recv:" + ConstantTemperatureTools.bytes2HexString(data, true, ", "));
+            this.loggerPrint("ConstantTemperatureSerialPort Recv:" + ConstantTemperatureTools.bytes2HexString(data, true, ", "));
             this.switchWriteModel();
             if(null != this.listener && null != this.listener.get()){
                 this.listener.get().onConstantTemperaturePackageReceived(data);
