@@ -8,7 +8,6 @@ import android.os.Message;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
-import cn.qd.peiwen.pwlogger.PWLogger;
 import cn.qd.peiwen.serialport.PWSerialPortHelper;
 import cn.qd.peiwen.serialport.PWSerialPortListener;
 import cn.qd.peiwen.serialport.PWSerialPortState;
@@ -127,11 +126,12 @@ class ConstantTemperatureSerialPort implements PWSerialPortListener {
     }
 
     private void write(byte[] data) {
-        PWLogger.d("Centrifuge Send:" + ConstantTemperatureTools.bytes2HexString(data, true, ", "));
-        if (this.isInitialized() && this.enabled) {
-            this.helper.writeAndFlush(data);
-            ConstantTemperatureSerialPort.this.switchReadModel();
+        if (!this.isInitialized() || !this.enabled) {
+            return;
         }
+        this.helper.writeAndFlush(data);
+        ConstantTemperatureSerialPort.this.switchReadModel();
+        this.loggerPrint("CentrifugeSerialPort Send:" + ConstantTemperatureTools.bytes2HexString(data, true, ", "));
     }
 
     public void switchReadModel() {
@@ -160,7 +160,7 @@ class ConstantTemperatureSerialPort implements PWSerialPortListener {
             byte[] data = new byte[index];
             this.buffer.readBytes(data, 0, data.length);
             this.buffer.discardReadBytes();
-            PWLogger.d("指令丢弃:" + ConstantTemperatureTools.bytes2HexString(data, true, ", "));
+            this.loggerPrint("CentrifugeSerialPort 指令丢弃:" + ConstantTemperatureTools.bytes2HexString(data, true, ", "));
         }
         return result;
     }
@@ -180,7 +180,12 @@ class ConstantTemperatureSerialPort implements PWSerialPortListener {
 
     @Override
     public void onReadThreadReleased(PWSerialPortHelper helper) {
-
+        if (!this.isInitialized() || !helper.equals(this.helper)) {
+            return;
+        }
+        if (null != this.listener && null != this.listener.get()) {
+            this.listener.get().onConstantTemperaturePrint("CentrifugeSerialPort read thread released");
+        }
     }
 
     @Override
@@ -195,7 +200,12 @@ class ConstantTemperatureSerialPort implements PWSerialPortListener {
 
     @Override
     public void onStateChanged(PWSerialPortHelper helper, PWSerialPortState state) {
-
+        if (!this.isInitialized() || !helper.equals(this.helper)) {
+            return;
+        }
+        if (null != this.listener && null != this.listener.get()) {
+            this.listener.get().onConstantTemperaturePrint("CentrifugeSerialPort state changed: " + state.name());
+        }
     }
 
     @Override
@@ -236,7 +246,7 @@ class ConstantTemperatureSerialPort implements PWSerialPortListener {
                 continue;
             }
             this.buffer.discardReadBytes();
-            PWLogger.d("Centrifuge Recv:" + ConstantTemperatureTools.bytes2HexString(data, true, ", "));
+            this.loggerPrint("CentrifugeSerialPort Recv:" + ConstantTemperatureTools.bytes2HexString(data, true, ", "));
             this.switchWriteModel();
             if(null != this.listener && null != this.listener.get()){
                 this.listener.get().onConstantTemperaturePackageReceived(data);
